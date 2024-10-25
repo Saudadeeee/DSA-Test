@@ -9,7 +9,7 @@ struct Ngay {
 
 // Cấu trúc lưu thông tin sinh viên
 struct SinhVien {
-    int maSV; // Thay đổi từ char[] sang int
+    int maSV;
     char hoTen[50];
     int gioiTinh;
     Ngay ngaySinh;
@@ -45,7 +45,7 @@ Node* taoNode(SinhVien sv) {
     return p;
 }
 
-// Khởi tạo
+// Khởi tạo ngày sinh
 void nhapNgay(Ngay &ngay) {
     cout << "Nhap ngay, thang, nam: ";
     cin >> ngay.ngay >> ngay.thang >> ngay.nam;
@@ -70,7 +70,8 @@ void nhapSinhVien(SinhVien &sv) {
     cin >> sv.khoa;
 }
 
-// Thêm sinh viên vào danh sách đã sắp xếp
+// Thêm sinh viên vào danh sách theo mã sinh viên
+//Ý tưởng sẽ là khi thêm vào sẽ so sánh mã sinh viên với các sinh viên có sẵn đã tồn tại trong danh sách 
 void themSinhVien(List &l, SinhVien sv) {
     Node *p = taoNode(sv);
     if (l.first == nullptr || sv.maSV < l.first->data.maSV) {
@@ -132,7 +133,7 @@ void loaiBoSinhVienCungNgaySinh(List &l) {
     while (p != nullptr) {
         Node *q = p->link;
         bool found = false;
-        while (q != nullptr) {
+        while (q != nullptr) {//So sánh từng thành phần trong ngày sinh
             if (p->data.ngaySinh.ngay == q->data.ngaySinh.ngay &&
                 p->data.ngaySinh.thang == q->data.ngaySinh.thang &&
                 p->data.ngaySinh.nam == q->data.ngaySinh.nam) {
@@ -159,6 +160,7 @@ void loaiBoSinhVienCungNgaySinh(List &l) {
 }
 
 int main(){
+    //Khai báo list
     List l;
     khoiTaoList(l);
     int n;
