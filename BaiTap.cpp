@@ -45,12 +45,7 @@ Node* taoNode(SinhVien sv) {
     return p;
 }
 
-// Khởi tạo ngày sinh
-void nhapNgay(Ngay &ngay) {
-    cout << "Nhap ngay, thang, nam: ";
-    cin >> ngay.ngay >> ngay.thang >> ngay.nam;
-}
-
+//Nhập vào thông tin sinh viên
 void nhapSinhVien(SinhVien &sv) {
     cout << "Nhap ma SV: ";
     cin >> sv.maSV;
@@ -60,7 +55,12 @@ void nhapSinhVien(SinhVien &sv) {
     cout << "Nhap gioi tinh (0 - Nu, 1 - Nam): ";
     cin >> sv.gioiTinh;
     cout << "Nhap ngay sinh:\n";
-    nhapNgay(sv.ngaySinh);
+    cout << "Ngay: ";
+    cin >> sv.ngaySinh.ngay;
+    cout << "Thang: ";
+    cin >> sv.ngaySinh.thang;
+    cout << "Nam: ";
+    cin >> sv.ngaySinh.nam;
     cout << "Nhap dia chi: ";
     cin.ignore();
     cin.getline(sv.diaChi, 100);
@@ -69,7 +69,6 @@ void nhapSinhVien(SinhVien &sv) {
     cout << "Nhap khoa: ";
     cin >> sv.khoa;
 }
-
 // Thêm sinh viên vào danh sách theo mã sinh viên
 //Ý tưởng sẽ là khi thêm vào sẽ so sánh mã sinh viên với các sinh viên có sẵn đã tồn tại trong danh sách 
 void themSinhVien(List &l, SinhVien sv) {
@@ -129,11 +128,10 @@ void timVaXuatSinhVienCungNgaySinh(const List &l) {
 // Loại bỏ sinh viên có cùng ngày sinh
 void loaiBoSinhVienCungNgaySinh(List &l) {
     Node *p = l.first;
-    Node *prev = nullptr;
     while (p != nullptr) {
         Node *q = p->link;
         bool found = false;
-        while (q != nullptr) {//So sánh từng thành phần trong ngày sinh
+        while (q != nullptr) { // So sánh từng thành phần trong ngày sinh
             if (p->data.ngaySinh.ngay == q->data.ngaySinh.ngay &&
                 p->data.ngaySinh.thang == q->data.ngaySinh.thang &&
                 p->data.ngaySinh.nam == q->data.ngaySinh.nam) {
@@ -143,17 +141,30 @@ void loaiBoSinhVienCungNgaySinh(List &l) {
             q = q->link;
         }
         if (found) {
-            if (prev == nullptr) { // xoa o dau danh sach
-                l.first = p->link;
-                delete p;
-                p = l.first;
-            } else { // xoa o giua hoac cuoi
-                prev->link = p->link;
-                delete p;
-                p = prev->link;
+            // Xóa tất cả các sinh viên có cùng ngày sinh với p
+            Node *current = l.first;
+            Node *prevCurrent = nullptr;
+            while (current != nullptr) {
+                if (current->data.ngaySinh.ngay == p->data.ngaySinh.ngay &&
+                    current->data.ngaySinh.thang == p->data.ngaySinh.thang &&
+                    current->data.ngaySinh.nam == p->data.ngaySinh.nam) {
+                    if (prevCurrent == nullptr) { // xóa ở đầu danh sách vì con trỏ đặt ở đầu danh sách nên phải xét riêng
+                        l.first = current->link;
+                        delete current;
+                        current = l.first;
+                    } else { // xóa ở giữa hoặc cuối
+                        prevCurrent->link = current->link;
+                        delete current;
+                        current = prevCurrent->link;
+                    }
+                } else {
+                    prevCurrent = current;
+                    current = current->link;
+                }
             }
+            // Đặt lại con trỏ p sau khi xóa
+            p = l.first;
         } else {
-            prev = p;
             p = p->link;
         }
     }
@@ -166,17 +177,15 @@ int main(){
     int n;
     cout << "Nhap so luong sinh vien: ";
     cin >> n;
-
+    //Nhập thông tin sinh viên
     for (int i = 0; i < n; i++) {
         SinhVien sv;
         cout << "Nhap thong tin sinh vien thu " << i + 1 << ":\n";
         nhapSinhVien(sv);
         themSinhVien(l, sv);
     }
-
     cout << "\nDanh sach sinh vien sau khi sap xep:\n";
     inDanhSachSinhVien(l);
-
     cout << "\nSinh vien co cung ngay sinh:\n";
     timVaXuatSinhVienCungNgaySinh(l);
 
